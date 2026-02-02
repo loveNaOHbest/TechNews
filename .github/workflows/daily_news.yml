@@ -1,27 +1,33 @@
-name: Daily Tech News Bot
+name: Personal Daily News Bot
 
 on:
   schedule:
-    # 每天北京时间 8:00 运行 (UTC 0:00)
+    # 定时任务使用 UTC 时间，北京时间 = UTC + 8
+    # 每天北京时间 08:00 运行 (UTC 00:00)
     - cron: '0 0 * * *'
-  workflow_dispatch: # 开启手动运行开关
+    # 每天北京时间 22:00 运行 (UTC 14:00)
+    - cron: '0 14 * * *'
+  workflow_dispatch: # 允许你在 GitHub 页面上手动点击 "Run workflow" 进行测试
 
 jobs:
-  run_bot:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install dependencies
-      run: pip install requests feedparser
+      - name: Install dependencies
+        run: |
+          pip install requests feedparser
 
-    - name: Run news scraper
-      env:
-        SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
-      run: python news_bot.py
+      - name: Run news bot
+        env:
+          # 从仓库的 Secrets 中读取你之前设置好的 Server酱 Key
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+        run: python news_bot.py
