@@ -1,1 +1,1 @@
-# TechNews
+# MY_News
