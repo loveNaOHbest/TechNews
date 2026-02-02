@@ -68,14 +68,7 @@ def generate_report():
     
     # 3. 硬核玩家圈 & 马拉松 (你的圈内偏好)
     report += "#### 🎮 硬核竞技 & 🏃 跑者空间\n"
-    
-    # CS2 模块
-    report += "- [5EPlay App](fiveeplay://) | [HLTV 网页](https://www.hltv.org/)\n"
-    # 社区模块
-    report += "- [NGA App](nga://) | [B站马拉圈](bilibili://space/1949143691)\n"
-    # 音乐与跑步
-    report += "- [酷狗概念版](kugou://) | [数字心动 App](shuzixindong://)\n\n"
-    
+
     # CS2 模块
     report += "- [CS2-HLTV 战报](https://www.hltv.org/)\n"
     report += "- [CS2-5E 战报](https://event.5eplay.com/csgo/matches/)\n"
