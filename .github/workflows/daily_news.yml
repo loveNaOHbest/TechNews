@@ -3,7 +3,7 @@ name: Personal Daily News Bot
 on:
   schedule:
     - cron: '13 0 * * *'    # 北京时间 08:13
-    - cron: '13 14 * * *'   # 北京时间 22:13
+    - cron: '17 14 * * *'   # 北京时间 22:13
   workflow_dispatch:
 
 jobs:
