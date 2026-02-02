@@ -21,7 +21,8 @@ jobs:
       - name: Install dependencies
         run: pip install requests feedparser
 
-      - name: Run news scraper
+        - name: Run news scraper
         env:
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          AMAP_KEY: ${{ secrets.AMAP_KEY }} # 必须加上这一行
         run: python news_bot.py
