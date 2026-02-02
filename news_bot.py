@@ -68,12 +68,15 @@ def generate_report():
     
     # 3. 硬核玩家圈 & 马拉松 (你的圈内偏好)
     report += "#### 🎮 硬核竞技 & 🏃 跑者空间\n"
-    report += "- [CS2 - HLTV 战报](https://www.hltv.org/)\n"
-    report += "- [CS2 - 5E 战报]（https://event.5eplay.com/csgo/matches/)\n"
+    # CS2 模块
+    report += "- [CS2-HLTV 战报](https://www.hltv.org/)\n"
+    report += "- [CS2-5E 战报](https://event.5eplay.com/csgo/matches/)\n"
+    # 音乐与社区
     report += "- [网易云热歌](https://music.163.com/#/discover/toplist?id=3778678)\n"
-    report += "- [王者/金铲铲] [NGA 社区](https://bbs.nga.cn/thread.php?fid=-7)\n"
-    report += "- [赛事] [数字心动](https://race.shuzixindong.com/)\n"
-    report += "- [马拉圈](https://space.bilibili.com/1949143691?spm_id_from=333.337.0.0/)\n"
+    report += "- [NGA 硬核社区](https://bbs.nga.cn/thread.php?fid=-7)\n"
+    # 跑步模块 (移除了B站复杂的追踪参数)
+    report += "- [数字心动赛事](https://race.shuzixindong.com/)\n"
+    report += "- [马拉圈动态](https://space.bilibili.com/1949143691)\n\n"
     
     report += "--- \n> 💡 考研加油！别忘了给 Nikon Z30 充电。📸"
     return report
