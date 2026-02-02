@@ -56,25 +56,31 @@ def generate_report():
     now_bj = datetime.utcnow() + timedelta(hours=8)
     countdown = (exam_date - now_bj).days
     
-    report = f"### 🧩 双城全能兴趣报 | {now_bj.strftime('%H:%M')}\n"
+    report = f"### 🧩 全能兴趣报 | {now_bj.strftime('%H:%M')}\n"
     report += f"> 📅 考研倒计时：{countdown} 天\n"
     report += f"> 🌤️ {get_amap_weather()}\n\n"
     
-    report += "#### 🔥 社交热点 (直达)\n- [微博热搜榜](https://s.weibo.com/top/summary) | [知乎热榜](https://www.zhihu.com/hot)\n\n"
+# 1. 社交热点 (直达链接)
+    report += "#### 🔥 社交实时热点 (直达)\n- [微博热搜榜](https://s.weibo.com/top/summary) | [知乎热榜](https://www.zhihu.com/hot)\n\n"
     
-    report += "#### 🚀 24h 深度资讯 (RSS)\n" + (get_rss_news() or "- 暂无深度更新") + "\n\n"
+    # 2. 深度资讯
+    report += "#### 🚀 24h 深度科技/摄影/开源 (RSS)\n" + (get_rss_news() or "- 暂无更新") + "\n\n"
     
+    # 3. 硬核玩家圈 & 马拉松 (你的圈内偏好)
     report += "#### 🎮 硬核竞技 & 🏃 跑者空间\n"
-    report += "- [CS2] [HLTV 战报](https://www.hltv.org/) | [网易云热评](https://music.163.com/#/discover/toplist?id=3778678)\n"
-    report += "- [王者] [NGA 王者专区](https://bbs.nga.cn/thread.php?fid=511) | [铲铲] [NGA 铲铲专区](https://bbs.nga.cn/thread.php?fid=-7403567)\n"
-    report += "- [赛事] [数字心跳](https://www.shuzixintiao.com/) | [爱燃烧跑友社区](https://iranshao.com/)\n\n"
+    report += "- [CS2 - HLTV 战报](https://www.hltv.org/)\n"
+    report += "- [CS2 - 5E 战报]（https://event.5eplay.com/csgo/matches/)\n"
+    report += "- [网易云热歌](https://music.163.com/#/discover/toplist?id=3778678)\n"
+    report += "- [王者/金铲铲] [NGA 社区](https://bbs.nga.cn/thread.php?fid=-7)\n"
+    report += "- [赛事] [数字心动](https://race.shuzixindong.com/)\n"
+    report += "- [马拉圈](https://space.bilibili.com/1949143691?spm_id_from=333.337.0.0/)\n"
     
     report += "--- \n> 💡 考研加油！别忘了给 Nikon Z30 充电。📸"
     return report
 
 def send_to_wechat(content):
     send_key = os.getenv("SERVERCHAN_SENDKEY")
-    requests.post(f"https://sctapi.ftqq.com/{send_key}.send", data={"title": "您的专属全能兴趣报", "desp": content})
+    requests.post(f"https://sctapi.ftqq.com/{send_key}.send", data={"title": "您的专属兴趣报", "desp": content})
 
 if __name__ == "__main__":
     send_to_wechat(generate_report())
