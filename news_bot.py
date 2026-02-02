@@ -5,69 +5,79 @@ import os
 import time
 
 # --- 配置区 ---
-# IT之家, 少数派, 36氪, Linux.do 等 RSS 源
-RSS_SOURCES = {
-    "科技深挖": "https://www.ithome.com/rss/",
-    "数码生活": "https://sspai.com/feed",
-}
+# 天气预报城市（用于马拉松训练参考）
+CITY = "南京" # 你可以改为洛阳或其他城市
 
-def get_rss_news():
-    """保留原有逻辑：抓取过去24小时的深度科技讯息"""
-    news_list = []
-    now = datetime.utcnow()
-    yesterday = now - timedelta(days=1)
-    
-    for name, url in RSS_SOURCES.items():
-        try:
-            feed = feedparser.parse(url)
-            for entry in feed.entries[:8]: # 每个源取前8条
-                pub_time = datetime.fromtimestamp(time.mktime(entry.published_parsed))
-                if pub_time > yesterday:
-                    news_list.append(f"- 【{name}】[{entry.title}]({entry.link})")
-        except:
-            continue
-    return "\n".join(news_list)
+def get_weather():
+    """获取天气预报，方便安排跑步"""
+    try:
+        url = f"https://api.vvhan.com/api/weather?city={CITY}"
+        res = requests.get(url).json()
+        if res['success']:
+            data = res['data']
+            return f"🌤️ {CITY}天气：{data['type']} | {data['low']}~{data['high']} | {data['week']}"
+    except: return "🌤️ 天气数据获取失败"
 
-def get_bilibili_hot():
-    """B站热门：涵盖二次元、数码、游戏"""
+def get_hot_lists():
+    """获取微博和知乎热榜（使用聚合接口避开反爬）"""
+    content = "#### 🔥 实时热搜 (微博 & 知乎)\n"
+    try:
+        # 微博热搜
+        wb_res = requests.get("https://api.vvhan.com/api/hotlist?type=wbHot").json()
+        wb_items = [f"- [微博] {i['title']}]({i['url']})" for i in wb_res['data'][:5]]
+        # 知乎热榜
+        zh_res = requests.get("https://api.vvhan.com/api/hotlist?type=zhihuHot").json()
+        zh_items = [f"- [知乎] {i['title']}]({i['url']})" for i in zh_res['data'][:5]]
+        return content + "\n".join(wb_items + zh_items)
+    except:
+        return content + "- 暂时无法连接社交热点接口"
+
+def get_bili_popular():
+    """B站热门：覆盖二次元、数码、游戏"""
     try:
         url = "https://api.bilibili.com/x/web-interface/popular?ps=6"
         res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}).json()
-        return "\n".join([f"- [B站热门: {i['title']}]({i['short_link_v2']})" for i in res['data']['list']])
-    except: return "- 暂未获取到B站动态"
+        return "#### 📺 B站热门精选\n" + "\n".join([f"- [B站] {i['title']}]({i['short_link_v2']})" for i in res['data']['list']])
+    except: return "#### 📺 B站热门\n- 暂时无法获取"
 
-def get_weibo_hot():
-    """微博热搜：社会/娱乐热点"""
-    try:
-        res = requests.get("https://weibo.com/ajax/side/hotSearch").json()
-        return "\n".join([f"- [微博热搜: {i['word']}](https://s.weibo.com/weibo?q={i['word']})" for i in res['data']['realtime'][:8]])
-    except: return "- 暂未获取到微博热搜"
+def get_rss_tech():
+    """深度科技与摄影 (IT之家 & 少数派)"""
+    sources = {"科技深挖": "https://www.ithome.com/rss/", "数码摄影": "https://sspai.com/feed"}
+    news = []
+    now = datetime.utcnow()
+    for name, url in sources.items():
+        try:
+            f = feedparser.parse(url)
+            for e in f.entries[:5]:
+                news.append(f"- 【{name}】[{e.title}]({e.link})")
+        except: continue
+    return "#### 🚀 深度科技资讯\n" + ("\n".join(news) or "- 暂无更新")
 
 def generate_report():
+    # 考研倒计时逻辑（假设2027考研初试为2026年12月20日）
+    exam_date = datetime(2026, 12, 20)
     now_bj = datetime.utcnow() + timedelta(hours=8)
-    # 针对你的爱好定制化标签
-    hobbies = "📸摄影 | 💻代码 | 🎮CS/王者 | 🏃马拉松 | 📚考研必胜"
+    countdown = (exam_date - now_bj).days
     
-    report = f"### 🌟 {hobbies}\n\n"
-    report += f"**生成时间：{now_bj.strftime('%Y-%m-%d %H:%M')}**\n\n"
+    report = f"### 🧩 您的全能早晚报 | {now_bj.strftime('%H:%M')}\n"
+    report += f"> 📅 考研倒计时：{countdown} 天 | {get_weather()}\n\n"
     
-    report += "#### 🚀 24h 科技精选 (RSS)\n"
-    report += (get_rss_news() or "- 暂无更新") + "\n\n"
+    report += get_hot_lists() + "\n\n"
+    report += get_rss_tech() + "\n\n"
+    report += get_bili_popular() + "\n\n"
     
-    report += "#### 🔥 社交/深度热议 (微博&知乎)\n"
-    report += get_weibo_hot() + "\n\n"
+    report += "#### 🎮 垂直兴趣直达\n"
+    report += "- [HLTV] [CS2 赛事中心](https://www.hltv.org/)\n"
+    report += "- [王者荣耀] [官网公告更新](https://pvp.qq.com/)\n"
+    report += "- [考研] [中国研究生招生信息网](https://yz.chsi.com.cn/)\n\n"
     
-    report += "#### 📺 哔哩哔哩热门 (二次元/数码)\n"
-    report += get_bilibili_hot() + "\n\n"
-    
-    report += "--- \n> 💡 考研加油！别忘了带上水壶去跑步。🐾"
+    report += "--- \n> 💡 今天的代码写了吗？别忘了给 Nikon Z30 充电！📸"
     return report
 
 def send_to_wechat(content):
     send_key = os.getenv("SERVERCHAN_SENDKEY")
     url = f"https://sctapi.ftqq.com/{send_key}.send"
-    data = {"title": f"今日全能兴趣报", "desp": content}
-    requests.post(url, data=data)
+    requests.post(url, data={"title": "您的全能兴趣报已送达", "desp": content})
 
 if __name__ == "__main__":
     send_to_wechat(generate_report())
