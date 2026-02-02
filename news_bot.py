@@ -8,12 +8,15 @@ import time
 CITY = "hefei" # 合肥
 
 def get_weather():
-    """获取合肥天气 (wttr.in 接口更极客、更稳)"""
+    """获取合肥天气 (强制摄氏度单位)"""
     try:
-        url = f"https://wttr.in/{CITY}?format=3&lang=zh"
+        # 添加 m 参数强制使用公制单位（摄氏度），添加 1 参数只显示简短结果
+        url = f"https://wttr.in/{CITY}?format=%c+%t+%w&m&lang=zh"
         res = requests.get(url, timeout=10)
-        return f"🌤️ {res.text.strip()}"
-    except: return "🌤️ 合肥天气：获取中..."
+        # 结果会显示类似：☀️ +10°C ↗️11km/h
+        return f"🌤️ 合肥今日：{res.text.strip()}"
+    except: 
+        return "🌤️ 合肥天气：获取中..."
 
 def get_rss_news():
     """保留你满意的 RSS 抓取逻辑：IT之家、少数派、Linux.do"""
