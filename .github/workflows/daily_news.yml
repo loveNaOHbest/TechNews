@@ -1,0 +1,27 @@
+name: Daily Tech News Bot
+
+on:
+  schedule:
+    # 每天北京时间 8:00 运行 (UTC 0:00)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 开启手动运行开关
+
+jobs:
+  run_bot:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: pip install requests feedparser
+
+    - name: Run news scraper
+      env:
+        SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+      run: python news_bot.py
